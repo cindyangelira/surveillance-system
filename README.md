@@ -3,6 +3,8 @@
 ## System Design
 ![picture1](systemdesign.png)
 
+Training yolov8's notebook for violence detection can be found in my [kaggle repo](https://www.kaggle.com/code/cindybtari/violence-detection-with-yolov8).
+
 ## Project Structure
 ```
 drone-surveillance-system/
