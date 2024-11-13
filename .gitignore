@@ -1,2 +1,9 @@
 .env
+
+
 models/
+
+frontend/node_modules/
+
+
+demo/drone-surveillance/node_modules/

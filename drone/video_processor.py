@@ -32,7 +32,7 @@ class VideoProcessor:
         self.running = False
         self.logger = logging.getLogger(__name__)
         
-        # Define class mappings for your violence detection model
+        # define class mappings for your violence detection model
         self.classes = {
             0: 'person',
             1: 'fighting',
@@ -46,16 +46,16 @@ class VideoProcessor:
             9: 'group_violence'
         }
         
-        # Define violence-related classes
-        self.violence_classes = {1, 2, 3, 7, 9}  # Class IDs that indicate violence
-        self.weapon_classes = {4, 5, 6}          # Class IDs for weapons
+        # define violence-related classes
+        self.violence_classes = {1, 2, 3, 7, 9}  
+        self.weapon_classes = {4, 5, 6}         
 
     def start(self, video_source=0):
         """Start video processing"""
         self.running = True
         self.capture = cv2.VideoCapture(video_source)
         
-        # Start processing threads
+
         self.capture_thread = threading.Thread(target=self._capture_frames)
         self.process_thread = threading.Thread(target=self._process_frames)
         
@@ -75,10 +75,9 @@ class VideoProcessor:
             if not self.frame_queue.full():
                 self.frame_queue.put((frame, time.time()))
             else:
-                # Skip frame if queue is full
                 self.logger.debug("Frame queue full, skipping frame")
             
-            time.sleep(0.01)  # Prevent excessive CPU usage
+            time.sleep(0.01)  # prevent excessive CPU usage
 
     def _process_frames(self):
         """Process frames with YOLO model"""
@@ -90,20 +89,15 @@ class VideoProcessor:
             frame, timestamp = self.frame_queue.get()
             
             try:
-                # Preprocess frame
                 input_tensor = self._preprocess_frame(frame)
                 
-                # Run inference
                 with torch.no_grad():
                     predictions = self.model(input_tensor)
                 
-                # Process predictions
                 detections = self._process_predictions(predictions, frame)
                 
-                # Analyze for violence
                 violence_detected = self._analyze_violence(detections)
                 
-                # Create processed frame result
                 result = ProcessedFrame(
                     frame=frame,
                     detections=detections,
@@ -111,7 +105,6 @@ class VideoProcessor:
                     violence_detected=violence_detected
                 )
                 
-                # Store result
                 if not self.result_queue.full():
                     self.result_queue.put(result)
                 
@@ -121,17 +114,14 @@ class VideoProcessor:
 
     def _preprocess_frame(self, frame: np.ndarray) -> torch.Tensor:
         """Preprocess frame for YOLO model"""
-        # Convert BGR to RGB
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         
-        # Resize and normalize
-        input_size = (640, 640)  # Adjust based on your model's requirements
+        input_size = (640, 640)  
         image = cv2.resize(image, input_size)
         image = image.transpose(2, 0, 1)  # HWC to CHW
         image = torch.from_numpy(image).float()
         image /= 255.0  # Normalize to [0,1]
         
-        # Add batch dimension
         image = image.unsqueeze(0)
         image = image.to(self.device)
         
@@ -142,17 +132,15 @@ class VideoProcessor:
         """Process YOLO predictions into structured format"""
         height, width = original_frame.shape[:2]
         
-        # Convert predictions to numpy
         predictions = predictions[0].cpu().numpy()
         
-        # Filter by confidence
         confident_preds = predictions[predictions[:, 4] > self.confidence_threshold]
         
         objects = []
         for pred in confident_preds:
             x1, y1, x2, y2, conf, class_id = pred[:6]
             
-            # Convert to original frame coordinates
+            # convert to original frame coordinates
             x1 = int(x1 * width)
             y1 = int(y1 * height)
             x2 = int(x2 * width)
@@ -181,8 +169,7 @@ class VideoProcessor:
         """Analyze detections for signs of violence"""
         if not detections['objects']:
             return False
-        
-        # Check for violent actions
+
         violence_scores = []
         has_weapons = False
         
@@ -190,16 +177,13 @@ class VideoProcessor:
             class_id = obj['class_id']
             confidence = obj['confidence']
             
-            # Check for violent actions
             if class_id in self.violence_classes:
                 violence_scores.append(confidence)
             
-            # Check for weapons
             if class_id in self.weapon_classes:
                 has_weapons = True
                 violence_scores.append(confidence)
             
-            # Check for close proximity between people
             if obj['class_name'] == 'person':
                 for other_obj in detections['objects']:
                     if (other_obj['class_name'] == 'person' and 
@@ -211,7 +195,6 @@ class VideoProcessor:
                         if distance < 0.2:  # Close proximity threshold
                             violence_scores.append(0.6)  # Base suspicion score
         
-        # Calculate final violence score
         if violence_scores:
             max_score = max(violence_scores)
             return max_score > self.violence_threshold or has_weapons
@@ -220,15 +203,12 @@ class VideoProcessor:
 
     def _calculate_box_distance(self, bbox1: List[float], bbox2: List[float]) -> float:
         """Calculate normalized distance between two bounding boxes"""
-        # Calculate centers
         center1 = [(bbox1[0] + bbox1[2])/2, (bbox1[1] + bbox1[3])/2]
         center2 = [(bbox2[0] + bbox2[2])/2, (bbox2[1] + bbox2[3])/2]
         
-        # Get frame dimensions from first bbox
         frame_width = abs(bbox1[2] - bbox1[0])
         frame_height = abs(bbox1[3] - bbox1[1])
         
-        # Calculate Euclidean distance and normalize by frame size
         distance = np.sqrt((center1[0] - center2[0])**2 + (center1[1] - center2[1])**2)
         normalized_distance = distance / np.sqrt(frame_width**2 + frame_height**2)
         
@@ -246,7 +226,7 @@ class VideoProcessor:
         if hasattr(self, 'capture'):
             self.capture.release()
         
-        # Wait for threads to finish
+        # wait for threads to finish
         if hasattr(self, 'capture_thread'):
             self.capture_thread.join()
         if hasattr(self, 'process_thread'):

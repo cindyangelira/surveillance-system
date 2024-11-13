@@ -19,14 +19,14 @@ async def get_analytics_summary(
     """Get summary analytics for specified time range"""
     time_threshold = datetime.utcnow() - timedelta(hours=time_range)
     
-    # Get basic statistics
+    # get basic statistics
     stats = db.query(
         func.count(Event.id).label('total_events'),
         func.avg(EventAnalytics.severity_score).label('avg_severity'),
         func.avg(EventAnalytics.response_time).label('avg_response_time')
     ).join(EventAnalytics).filter(Event.timestamp >= time_threshold).first()
     
-    # Get risk level distribution
+    # get risk level distribution
     risk_distribution = db.query(
         Event.risk_level,
         func.count(Event.id).label('count')
@@ -34,7 +34,7 @@ async def get_analytics_summary(
         Event.timestamp >= time_threshold
     ).group_by(Event.risk_level).all()
     
-    # Get weapon type distribution
+    # get weapon type distribution
     weapon_stats = db.query(
         Event.weapon_types,
         func.count(Event.id).label('count')
@@ -65,7 +65,7 @@ async def get_hotspots(
     """Get event hotspots based on spatial clustering"""
     time_threshold = datetime.utcnow() - timedelta(hours=time_range)
     
-    # Find clusters of events
+    # find clusters of events
     clusters = db.query(
         Event.location,
         func.count(Event.id).label('event_count'),
@@ -78,7 +78,7 @@ async def get_hotspots(
         func.count(Event.id) >= min_events
     ).all()
     
-    # Process clusters
+    # process clusters
     hotspots = []
     for cluster in clusters:
         nearby_events = db.query(Event).filter(
@@ -115,19 +115,19 @@ async def get_trends(
     """Get event trends over time"""
     time_threshold = datetime.utcnow() - timedelta(hours=time_range)
     
-    # Generate time intervals
+    # generate time intervals
     intervals = []
     current_time = time_threshold
     while current_time < datetime.utcnow():
         interval_end = current_time + timedelta(minutes=interval_minutes)
         
-        # Count events in interval
+        # count events in interval
         event_count = db.query(func.count(Event.id)).filter(
             Event.timestamp >= current_time,
             Event.timestamp < interval_end
         ).scalar()
         
-        # Get average severity
+        # get average severity
         avg_severity = db.query(
             func.avg(EventAnalytics.severity_score)
         ).join(Event).filter(

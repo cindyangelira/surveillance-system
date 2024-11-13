@@ -119,11 +119,11 @@ def calculate_severity_score(event: EventCreate) -> float:
         'low': 0.3
     }.get(event.risk_level, 0.3)
     
-    # Adjust for weapons
+    # adjust for weapons
     if event.weapons_present:
         base_score *= 1.5
     
-    # Adjust for number of people
+    # adjust for number of people
     people_factor = min(event.num_people / 10, 1.0)
     base_score *= (1 + people_factor)
     
@@ -145,7 +145,7 @@ def calculate_zone_risk(db: Session, event: EventCreate) -> str:
     if not nearby_events:
         return 'low'
     
-    # Calculate average risk
+    # calculate average risk
     risk_scores = {
         'high': 3,
         'medium': 2,

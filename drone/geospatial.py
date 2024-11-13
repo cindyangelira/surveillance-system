@@ -111,35 +111,35 @@ class GeospatialModule:
         elevation = terrain_data['elevation']
         slope = terrain_data['slope']
         
-        # Initialize scores for each terrain type
+        # initialize scores for each terrain type
         scores = {terrain_type: 0.0 for terrain_type in TerrainType}
         
-        # Urban classification
+        # urban classification
         if (elevation < self.ELEVATION_THRESHOLDS['medium'] and 
             slope < self.SLOPE_THRESHOLDS['gentle']):
             scores[TerrainType.URBAN] += 0.8
             scores[TerrainType.SUBURBAN] += 0.4
         
-        # Mountain classification
+        # mountain classification
         if (elevation > self.ELEVATION_THRESHOLDS['mountain'] or 
             slope > self.SLOPE_THRESHOLDS['steep']):
             scores[TerrainType.MOUNTAIN] += 0.8
         
-        # Suburban/Rural classification
+        # suburban/rural classification
         if (elevation < self.ELEVATION_THRESHOLDS['medium'] and 
             slope < self.SLOPE_THRESHOLDS['moderate']):
             scores[TerrainType.SUBURBAN] += 0.6
             scores[TerrainType.RURAL] += 0.4
         
-        # Default to rural if no strong matches
+        # default to rural if no strong matches
         if all(score < 0.4 for score in scores.values()):
             scores[TerrainType.RURAL] += 0.5
 
-        # Get terrain type with highest score
+        # get terrain type with highest score
         terrain_type = max(scores.items(), key=lambda x: x[1])[0]
         confidence = scores[terrain_type]
         
-        # Generate description
+        # generate description
         description = self._generate_terrain_description(
             terrain_type,
             elevation,
@@ -190,13 +190,13 @@ class GeospatialModule:
         """Update location data with terrain analysis"""
         point = Point(msg.longitude, msg.latitude)
         
-        # Get elevation matrix and calculate slope
+        # get elevation matrix and calculate slope
         elevation_matrix = self._get_elevation_matrix(msg.longitude, msg.latitude)
         cell_size = abs(self.terrain_data.transform[0])
         elevation = float(elevation_matrix[1, 1])  # Center point elevation
         slope = self._calculate_slope(elevation_matrix, cell_size)
         
-        # Prepare terrain data for classification
+        # prepare terrain data for classification
         terrain_data = {
             'elevation': elevation,
             'slope': slope,
@@ -204,10 +204,10 @@ class GeospatialModule:
             'cell_size': cell_size
         }
         
-        # Classify terrain
+        # classify terrain
         terrain_type, confidence, description = self._classify_terrain(terrain_data)
         
-        # Get land use from vector data
+        # get land use from vector data
         land_use = self.land_use_data[self.land_use_data.contains(point)]
         land_use_type = land_use.iloc[0]['type'] if not land_use.empty else 'unknown'
         

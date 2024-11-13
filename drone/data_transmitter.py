@@ -1,4 +1,3 @@
-# drone/data_transmitter.py
 import aiohttp
 import base64
 import cv2
@@ -26,10 +25,8 @@ class DataTransmitter:
         await self._ensure_session()
         
         try:
-            # Prepare image data
             image_data = self._prepare_image(event_data['frame'])
             
-            # Prepare payload
             payload = {
                 "timestamp": event_data['timestamp'],
                 "location": {
@@ -44,7 +41,7 @@ class DataTransmitter:
                 "image_data": image_data
             }
 
-            # Send data with retries
+            # send data with retries
             for attempt in range(self.max_retries):
                 try:
                     async with self.session.post(self.endpoint, json=payload) as response:
@@ -70,9 +67,7 @@ class DataTransmitter:
     def _prepare_image(self, frame: np.ndarray) -> str:
         """Convert frame to base64 encoded string"""
         try:
-            # Encode frame as JPEG
             _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
-            # Convert to base64
             return base64.b64encode(buffer).decode('utf-8')
         except Exception as e:
             self.logger.error(f"Error preparing image: {e}")

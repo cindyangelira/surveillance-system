@@ -13,23 +13,23 @@ class Event(Base):
     terrain_type = Column(String)
     land_use = Column(String)
     
-    # Analysis data
+    # analysis data
     num_people = Column(Integer)
     violence_type = Column(String)
     weapons_present = Column(Boolean, default=False)
-    weapon_types = Column(JSON)  # Array of weapon types
+    weapon_types = Column(JSON)  # array of weapon types
     risk_level = Column(String)  # 'low', 'medium', 'high'
     terrain_context = Column(String)
-    recommended_actions = Column(JSON)  # Array of actions
+    recommended_actions = Column(JSON)  # array of actions
     
-    # Detection data
+    # detection data
     detection_confidence = Column(Float)
-    detection_data = Column(JSON)  # Raw detection data
+    detection_data = Column(JSON)  # raw detection data
     
-    # Image data (stored as path or URL)
+    # image data (stored as path or URL)
     image_path = Column(String)
     
-    # Relationships
+    # relationships
     analytics = relationship("EventAnalytics", back_populates="event", uselist=False)
 
 class EventAnalytics(Base):
@@ -38,22 +38,17 @@ class EventAnalytics(Base):
     id = Column(Integer, primary_key=True, index=True)
     event_id = Column(Integer, ForeignKey("events.id"))
     timestamp = Column(DateTime, default=datetime.utcnow)
+
+    response_time = Column(Float) 
+    event_duration = Column(Float) 
     
-    # Time-based metrics
-    response_time = Column(Float)  # Time between detection and response
-    event_duration = Column(Float)  # Duration of the event
-    
-    # Location-based metrics
     zone_risk_level = Column(String)
     nearby_events_count = Column(Integer)
     
-    # Analysis metrics
     severity_score = Column(Float)
     confidence_score = Column(Float)
     
-    # Relationship
     event = relationship("Event", back_populates="analytics")
 
-# Create tables
 def init_db(engine):
     Base.metadata.create_all(bind=engine)

@@ -1,4 +1,3 @@
-# drone/main.py
 import asyncio
 from datetime import datetime
 import numpy as np
@@ -7,10 +6,10 @@ from dataclasses import dataclass
 import logging
 from pathlib import Path
 
-from .video_processor import VideoProcessor
-from .geospatial import GeospatialModule
-from .llm_processor import GemmaProcessor
-from .data_transmitter import DataTransmitter
+from video_processor import VideoProcessor
+from geospatial import GeospatialModule
+from llm_processor import GemmaProcessor
+from data_transmitter import DataTransmitter
 
 @dataclass
 class DroneConfig:
@@ -55,21 +54,17 @@ class DroneController:
 
     async def process_frame(self):
         """Process a single frame and associated data"""
-        # Get video frame and violence detection
         frame_data = self.video_processor.get_latest_frame()
         if frame_data is None:
             return
 
-        # If violence detected, process the event
         if frame_data.violence_detected:
             await self.process_violence_event(frame_data)
 
     async def process_violence_event(self, frame_data: Dict[str, Any]):
         """Process and transmit a violence event"""
-        # Get geospatial data
         geo_data = self.geo_module.get_current_data()
         
-        # Combine frame and geo data
         event_data = {
             'timestamp': datetime.now().isoformat(),
             'frame': frame_data.frame,
@@ -84,11 +79,9 @@ class DroneController:
             }
         }
 
-        # Process with LLM
         analysis = await self.llm_processor.analyze_event(event_data)
         event_data['analysis'] = analysis
 
-        # Transmit to server
         await self.data_transmitter.send_event(event_data)
 
     def stop(self):

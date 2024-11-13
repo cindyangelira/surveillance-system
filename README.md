@@ -1,15 +1,18 @@
 # Drone Surveillance System Setup Guide
 
+## System Design
+![picture1](systemdesign.png)
+
 ## Project Structure
 ```
 drone-surveillance-system/
-├── frontend/                   # React frontend application
+├── frontend/                   # react frontend application
 │   ├── public/
 │   │   └── assets/
 │   │       └── drone-icon.svg
 │   ├── src/
-│   │   ├── main.jsx          # Application entry point
-│   │   ├── App.jsx           # Root component
+│   │   ├── main.jsx          # application entry point
+│   │   ├── App.jsx           # root component
 │   │   ├── components/
 │   │   │   ├── ui/          # shadcn/ui components
 │   │   │   │   ├── alert.jsx
@@ -34,8 +37,8 @@ drone-surveillance-system/
 │   ├── tailwind.config.js
 │   └── vite.config.js
 │
-├── server/                    # FastAPI backend server
-│   ├── main.py               # Server entry point
+├── server/                    # fastAPI backend server
+│   ├── main.py               # server entry point
 │   ├── database.py
 │   ├── models.py
 │   └── api/
@@ -43,49 +46,50 @@ drone-surveillance-system/
 │           ├── events.py
 │           └── analytics.py
 │
-├── drone/                     # Drone control system
-│   ├── main.py               # Drone controller
+├── drone/                     # drone control system
+│   ├── main.py               # drone controller
 │   ├── video_processor.py    # YOLO processing
-│   ├── geospatial.py        # Location processing
+│   ├── geospatial.py        # location processing
 │   ├── llm_processor.py     # Gemma + Langchain
-│   └── data_transmitter.py  # Data transmission
+│   └── data_transmitter.py  # data transmission
 │
 ├── models/                    # AI Models
 │   ├── yolo/
 │   │   └── best.pt          # YOLO weights
 │   └── gemma/               # Gemma model files
 │
-├── data/                     # Data storage
-│   ├── terrain.tif          # Terrain data
-│   └── land_use.gpkg        # Land use data
+├── data/                     # data storage
+│   ├── terrain.tif          # terrain data
+│   └── land_use.gpkg        # land use data
 │
-├── requirements.txt          # Python dependencies
+├── requirements.txt          
 └── README.md
 ```
 
 ## Setup Instructions
+clone this repo
 
 ### 1. Environment Setup
 
 ```bash
-# Create and activate virtual environment
+# create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: .\venv\Scripts\activate
 
-# Install Python dependencies
+# install Python dependencies
 pip install -r requirements.txt
 ```
 
 ### 2. Frontend Setup
 
 ```bash
-# Navigate to frontend directory
+# navigate to frontend directory
 cd frontend
 
-# Install dependencies
+# install dependencies
 npm install
 
-# Install additional required packages
+# install additional required packages
 npm install @radix-ui/react-alert @radix-ui/react-badge lucide-react class-variance-authority clsx tailwind-merge tailwindcss-animate
 ```
 
@@ -103,7 +107,7 @@ GEMMA_MODEL_PATH=./models/gemma
 VIDEO_SOURCE=0  # 0 for webcam, or video file path
 
 # Database settings
-DATABASE_URL=sqlite:///./data/surveillance.db
+DATABASE_URL=postgresql://username:password@host:port/database_name
 ```
 
 ### 4. Starting the System
@@ -150,24 +154,24 @@ python main.py
 
 ### Frontend
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run lint         # Run ESLint
+npm run dev          
+npm run build       
+npm run preview      
+npm run lint        
 ```
 
 ### Backend
 ```bash
-uvicorn main:app --reload              # Start development server
-uvicorn main:app --host 0.0.0.0        # Start production server
-python -m pytest tests/                 # Run tests
+uvicorn main:app --reload             
+uvicorn main:app --host 0.0.0.0        
+python -m pytest tests/                 
 ```
 
 ### Drone System
 ```bash
-python main.py                   # Start drone system
-python main.py --simulate        # Run in simulation mode
-python main.py --debug          # Run with debug logging
+python main.py                   
+python main.py --simulate        
+python main.py --debug         
 ```
 
 ## Adding New Features
@@ -204,26 +208,3 @@ python main.py --debug          # Run with debug logging
 4. Database:
    - Ensure proper permissions for SQLite file
    - Check database migrations
-
-## Deployment
-
-1. Frontend:
-```bash
-cd frontend
-npm run build
-# Deploy dist/ directory to web server
-```
-
-2. Backend:
-```bash
-cd server
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
-
-3. Drone System:
-```bash
-cd drone
-python main.py --production
-```
-
-Would you like me to explain any specific part of the setup or provide more details about any component?

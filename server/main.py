@@ -1,4 +1,3 @@
-# server/main.py
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -12,7 +11,6 @@ import asyncio
 import logging
 import base64
 
-# Models
 class Location(BaseModel):
     latitude: float
     longitude: float
@@ -37,7 +35,6 @@ class Event(BaseModel):
     analysis: Analysis
     image_data: str  # Base64 encoded image
 
-# Initialize FastAPI
 app = FastAPI(title="Drone Surveillance API")
 
 # CORS middleware
@@ -49,7 +46,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize GeoDataFrame for events
+# initialize GeoDataFrame for events
 events_gdf = gpd.GeoDataFrame(
     columns=['id', 'timestamp', 'location', 'analysis', 'geometry'],
     geometry='geometry'
@@ -59,10 +56,10 @@ events_gdf = gpd.GeoDataFrame(
 async def create_event(event: Event):
     """Record a new violence detection event"""
     try:
-        # Create geometry point
+        # create geometry point
         point = Point(event.location.longitude, event.location.latitude)
         
-        # Add to GeoDataFrame
+        # add to GeoDataFrame
         new_row = {
             'id': str(len(events_gdf)),
             'timestamp': event.timestamp,
@@ -73,7 +70,7 @@ async def create_event(event: Event):
         
         events_gdf.loc[len(events_gdf)] = new_row
         
-        # Save image
+        # save image
         image_path = Path(f"data/images/{new_row['id']}.jpg")
         save_image(event.image_data, image_path)
         
@@ -100,7 +97,7 @@ async def get_events(
             filtered_gdf['analysis'].apply(lambda x: x['risk_level'] == risk_level)
         ]
     
-    # Convert to GeoJSON
+    # convert to GeoJSON
     geojson = filtered_gdf.to_crs(epsg=4326).__geo_interface__
     
     return {
@@ -115,7 +112,7 @@ async def get_event(event_id: str):
     if event.empty:
         raise HTTPException(status_code=404, detail="Event not found")
     
-    # Get image data
+    # get image data
     image_path = Path(f"data/images/{event_id}.jpg")
     image_data = None
     if image_path.exists():
@@ -140,7 +137,7 @@ async def get_heatmap(
     if end_time:
         filtered_gdf = filtered_gdf[filtered_gdf['timestamp'] <= end_time]
     
-    # Create heatmap data
+    # create heatmap data
     heatmap_data = []
     for _, row in filtered_gdf.iterrows():
         point = row['geometry']
