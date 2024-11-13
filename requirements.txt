@@ -1,0 +1,11 @@
+fastapi 
+uvicorn 
+geopandas 
+rasterio 
+pynmea2 
+pyserial 
+opencv-python 
+numpy 
+langchain 
+gemma-cpp 
+aiohttp
