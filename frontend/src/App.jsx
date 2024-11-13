@@ -1,6 +1,5 @@
-// src/App.jsx
 import React from 'react';
-import { MapDashboard } from './components/MapDashboard';
+import MapDashboard from './components/MapDashboard';
 
 const App = () => {
   return (
