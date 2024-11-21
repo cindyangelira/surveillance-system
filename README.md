@@ -1,4 +1,14 @@
-# Drone Surveillance System Setup Guide
+# Drone Surveillance System (EmpowerAir)
+
+This repo is part of my submission of [google women techmakers hackhaton](https://womentechmakers.devpost.com/).
+
+## UPDATE [2024-11-22]
+- The simplified version can be check on [this branch](https://github.com/cindyangelira/surveillance-system/tree/simplified-gemmini).
+- I still develop the geospatial maps, currently trying to add some Sentinel image for remote sensing.
+- I use **Gemini-1.5-flash** + Langchain
+- Here is how gemmini will analyze the detected violation:
+
+![picture0](gemma-result.png)
 
 ## System Design
 ![picture1](systemdesign.png)
