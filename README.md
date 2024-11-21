@@ -9,9 +9,11 @@ This repo is part of my submission of [google women techmakers hackhaton](https:
 - Here is how gemmini will analyze the detected violation:
 
 ![picture0](gemma-result.png)
+![picture1](gemma-analyzer-backend.png)
+
 
 ## System Design
-![picture1](systemdesign.png)
+![picture2](systemdesign.png)
 
 Training yolov8's notebook for violence detection can be found in my [kaggle repo](https://www.kaggle.com/code/cindybtari/violence-detection-with-yolov8).
 
