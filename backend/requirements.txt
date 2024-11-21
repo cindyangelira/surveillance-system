@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+python-multipart
+ultralytics
+opencv-python
+langchain-google-genai
+sqlalchemy
+psycopg2-binary
+python-jose
+websockets
+python-dotenv
+pydantic-settings
